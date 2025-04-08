@@ -1,0 +1,39 @@
+name: Deploy TinyURL
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: |
+        npm install
+        cd client && npm install
+    
+    - name: Build client
+      run: cd client && npm run build
+    
+    - name: Run tests
+      run: npm test || true
+    
+    # Example deployment step (would need to be configured for your specific hosting)
+    # - name: Deploy to Heroku
+    #   uses: akhileshns/heroku-deploy@v3.12.12
+    #   with:
+    #     heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+    #     heroku_app_name: "your-tinyurl-app"
+    #     heroku_email: ${{ secrets.HEROKU_EMAIL }} 

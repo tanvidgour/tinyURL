@@ -4,20 +4,29 @@ const { nanoid } = require('nanoid');
 // Create new shortened URL
 const createUrl = (originalUrl) => {
   return new Promise((resolve, reject) => {
-    // Generate a short ID (7 characters)
-    const shortId = nanoid(7);
-    
-    // Insert into database
-    const stmt = db.prepare('INSERT INTO urls (original_url, short_id) VALUES (?, ?)');
-    stmt.run(originalUrl, shortId, function(err) {
-      if (err) {
-        reject(err);
-        return;
-      }
+    try {
+      // Generate a short ID (7 characters)
+      const shortId = nanoid(7);
       
-      resolve({ shortId, originalUrl });
-    });
-    stmt.finalize();
+      console.log('Generated shortId:', shortId, 'for URL:', originalUrl);
+      
+      // Insert into database
+      const stmt = db.prepare('INSERT INTO urls (original_url, short_id) VALUES (?, ?)');
+      stmt.run(originalUrl, shortId, function(err) {
+        if (err) {
+          console.error('Database error in createUrl:', err);
+          reject(err);
+          return;
+        }
+        
+        console.log('URL saved in database with ID:', this.lastID);
+        resolve({ shortId, originalUrl });
+      });
+      stmt.finalize();
+    } catch (error) {
+      console.error('Error in createUrl:', error);
+      reject(error);
+    }
   });
 };
 

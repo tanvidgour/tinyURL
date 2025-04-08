@@ -11,24 +11,41 @@ const createShortUrl = async (req, res) => {
       return res.status(400).json({ error: 'URL is required' });
     }
     
+    console.log('Processing URL:', originalUrl);
+    
     if (!validateUrl(originalUrl)) {
-      return res.status(400).json({ error: 'Invalid URL format' });
+      return res.status(400).json({ error: 'Invalid URL format. Please make sure the URL is correctly formatted.' });
     }
     
+    // Ensure URL has a protocol for storage
+    let normalizedUrl = originalUrl;
+    if (!originalUrl.startsWith('http://') && !originalUrl.startsWith('https://')) {
+      normalizedUrl = 'https://' + originalUrl;
+    }
+    
+    console.log('Normalized URL:', normalizedUrl);
+    
     // Create short URL
-    const result = await urlModel.createUrl(originalUrl);
-    
-    // Construct the full shortened URL
-    const baseUrl = `${req.protocol}://${req.get('host')}`;
-    const shortUrl = `${baseUrl}/${result.shortId}`;
-    
-    res.status(201).json({
-      shortUrl,
-      originalUrl: result.originalUrl
-    });
+    try {
+      const result = await urlModel.createUrl(normalizedUrl);
+      
+      // Construct the full shortened URL
+      const baseUrl = `${req.protocol}://${req.get('host')}`;
+      const shortUrl = `${baseUrl}/${result.shortId}`;
+      
+      console.log('Successfully generated short URL:', shortUrl);
+      
+      res.status(201).json({
+        shortUrl,
+        originalUrl: result.originalUrl
+      });
+    } catch (dbError) {
+      console.error('Database error:', dbError);
+      res.status(500).json({ error: 'Error creating short URL in database. Please try again.' });
+    }
   } catch (error) {
     console.error('Error creating short URL:', error);
-    res.status(500).json({ error: 'Server error' });
+    res.status(500).json({ error: 'Server error. Please try again later.' });
   }
 };
 

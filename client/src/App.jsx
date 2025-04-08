@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import './App.css';
 
@@ -11,7 +12,7 @@ function App() {
   const [copied, setCopied] = useState(false);
 
   // API base URL
-  const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:5000/api' : '/api';
+  const API_BASE_URL = import.meta.env.DEV ? 'http://localhost:5001/api' : '/api';
 
   // Load recent URLs on component mount
   useEffect(() => {
@@ -88,7 +89,15 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-2xl font-bold text-center text-blue-600 mb-6">TinyURL Generator</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-center text-blue-600">TinyURL Generator</h1>
+          <Link 
+            to="/debug" 
+            className="text-sm bg-gray-200 hover:bg-gray-300 px-3 py-1 rounded-md text-gray-700"
+          >
+            Debug
+          </Link>
+        </div>
         
         {/* URL Input Form */}
         <form onSubmit={handleSubmit} className="mb-6">

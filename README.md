@@ -77,7 +77,3 @@ npm start
   - Response: Array of URL objects
 
 - **GET** `/:shortId` - Redirect to the original URL
-
-## License
-
-This project is licensed under the ISC License. 
